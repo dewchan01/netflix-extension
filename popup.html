@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Subtitle Translator</title>
+  <script src="popup.js"></script>
+</head>
+<body>
+  <h1>Subtitle Translator</h1>
+  <textarea id="subtitles" rows="4" placeholder="Enter subtitles..."></textarea>
+  <br>
+  <button id="translateButton">Translate</button>
+  <br>
+  <label for="languageSource">Source Language:</label>
+  <select id="languageSource">
+    <option value="ko">Korean</option>
+    <option value="ja">Japanese</option>
+    <option value="en">English</option>
+    <!-- Add more language options as needed -->
+  </select>
+  <br>
+  <label for="languageSelect">Target Language:</label>
+  <select id="languageSelect">
+    <option value="zh-cn">Simplified Chinese</option>
+    <option value="zh-tw">Traditional Chinese</option>
+    <option value="en">English</option>
+    <!-- Add more language options as needed -->
+  </select>
+  <br>
+  <div id="translationResult"></div>
+</body>
+</html>
