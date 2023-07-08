@@ -17,10 +17,10 @@ function getSubtitleText(subtitleElement) {
 
 // Function to set the translated subtitle text
 function setTranslatedSubtitleText(translatedSubtitles, subtitleElement) {
-  const translatedSubtitleElement = document.createElement('div');
+  const translatedSubtitleElement = document.createElement('p');
   translatedSubtitleElement.className = 'translatedSubtitle';
   translatedSubtitleElement.textContent = translatedSubtitles;
-  console.log(translatedSubtitleElement)
+  translatedSubtitleElement.style.cssText = 'left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; position: absolute; width: 1920px; top: 708.325px; font-size: 40px; text-shadow: 0 0 10px rgba(0, 0, 0, 0.3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
 
   const existingTranslatedSubtitle = document.querySelector('.translatedSubtitle');
 
@@ -47,10 +47,10 @@ function sendSubtitleText(subtitleText) {
   console.log(subtitleText);
   // send message to background script
   chrome.runtime.sendMessage({ action: 'translate', subtitles: subtitleText }, function (response) {
-    if (chrome.runtime.lastError) {
-      console.error(chrome.runtime.lastError);
-      return;
-    }
+    // if (chrome.runtime.lastError) {
+    //   console.error(chrome.runtime.lastError);
+    //   return;
+    // }
     console.log("Response from background script: ",response);
     // handle response from background script and set translated subs
     if (response) {
@@ -63,15 +63,18 @@ function sendSubtitleText(subtitleText) {
   });
 }
 
+let previousSubtitleText = '';
+
 function observeSubtitleChanges() {
-  const observer = new MutationObserver(function () {
+  setInterval(() => {
     const subtitleElement = getSubtitleElement();
     const subtitleText = getSubtitleText(subtitleElement);
 
-    sendSubtitleText(subtitleText);
-  });
-
-  observer.observe(document.body, { childList: true, subtree: true });
+    if (subtitleText && subtitleText !== previousSubtitleText) {
+      previousSubtitleText = subtitleText;
+      sendSubtitleText(subtitleText);
+    }
+  }, 100); // Adjust the interval duration as needed
 }
 
 // Run the script
