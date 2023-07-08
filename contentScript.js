@@ -20,7 +20,7 @@ function setTranslatedSubtitleText(translatedSubtitles, subtitleElement) {
   const translatedSubtitleElement = document.createElement('p');
   translatedSubtitleElement.className = 'translatedSubtitle';
   translatedSubtitleElement.textContent = translatedSubtitles;
-  translatedSubtitleElement.style.cssText = 'left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; position: absolute; width: 1920px; top: 708.325px; font-size: 40px; text-shadow: 0 0 10px rgba(0, 0, 0, 0.3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
+  translatedSubtitleElement.style.cssText = 'left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; position: absolute; width: 1920px; top: 758.325px; font-size: 40px; font-weight: 500; font-family: "Netflix Sans", "Helvetica Neue", "Segoe UI", Roboto, Ubuntu, sans-serif; color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
 
   const existingTranslatedSubtitle = document.querySelector('.translatedSubtitle');
 
