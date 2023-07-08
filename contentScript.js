@@ -51,7 +51,7 @@ function sendSubtitleText(subtitleText) {
     //   console.error(chrome.runtime.lastError);
     //   return;
     // }
-    console.log("Response from background script: ",response);
+    console.log("Response from background script: ", response);
     // handle response from background script and set translated subs
     if (response) {
       const translatedSubtitles = response.translatedSubtitles;
@@ -69,7 +69,9 @@ function observeSubtitleChanges() {
   setInterval(() => {
     const subtitleElement = getSubtitleElement();
     const subtitleText = getSubtitleText(subtitleElement);
-
+    if (subtitleText === '') {
+      setTranslatedSubtitleText('', subtitleElement);
+    }
     if (subtitleText && subtitleText !== previousSubtitleText) {
       previousSubtitleText = subtitleText;
       sendSubtitleText(subtitleText);
