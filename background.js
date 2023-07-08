@@ -1,18 +1,17 @@
-let targetLanguage = 'zh-cn'; // Default target language
+let targetLanguage = 'zh-CN'; // Default target language
 
 function translate(sourceText, sendResponse) {
-  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLanguage}&dt=t&q=${encodeURI(sourceText)}`;
-
+  var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" + targetLanguage + "&dt=t&q=" + encodeURI(sourceText);
   fetch(url)
     .then(response => response.json())
     .then(data => {
       const translatedText = data[0][0][0];
       sendResponse({ success: true, translatedSubtitles: translatedText });
     })
-    .catch(error => {
-      console.error(error);
-      sendResponse({ success: false });
-    });
+    // .catch(error => {
+    //   console.error(error);
+    //   sendResponse({ success: false });
+    // });
 }
 
 function changeTargetLanguage(language) {
