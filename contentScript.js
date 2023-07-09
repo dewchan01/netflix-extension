@@ -1,4 +1,5 @@
-// WIP: Script to translate subtitles on Netflix and continuously update translations
+// WIP: update position of old subs and new subs
+// WIP: fix the enable and disable of the extension button
 
 // Function to retrieve the current subtitle element
 function getSubtitleElement() {
@@ -46,7 +47,7 @@ function setTranslatedSubtitleText(translatedSubtitles, subtitleElement) {
 function sendSubtitleText(subtitleText) {
   console.log(subtitleText);
   // send message to background script
-  chrome.runtime.sendMessage({ action: 'translate', subtitles: subtitleText }, function (response) {
+  chrome.runtime.sendMessage({ action: 'enableExtension', subtitles: subtitleText }, function (response) {
     // if (chrome.runtime.lastError) {
     //   console.error(chrome.runtime.lastError);
     //   return;

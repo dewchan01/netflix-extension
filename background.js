@@ -1,4 +1,5 @@
 let targetLanguage = 'zh-CN'; // Default target language
+// let isEnabled = false; // Current state of the extension
 
 function translate(sourceText, sendResponse) {
   var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" + targetLanguage + "&dt=t&q=" + encodeURI(sourceText);
@@ -8,10 +9,10 @@ function translate(sourceText, sendResponse) {
       const translatedText = data[0][0][0];
       sendResponse({ success: true, translatedSubtitles: translatedText });
     })
-    // .catch(error => {
-    //   console.error(error);
-    //   sendResponse({ success: false });
-    // });
+  // .catch(error => {
+  //   console.error(error);
+  //   sendResponse({ success: false });
+  // });
 }
 
 function changeTargetLanguage(language) {
@@ -19,7 +20,13 @@ function changeTargetLanguage(language) {
 }
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  if (message.action === 'translate') {
+  if (message.action === 'disableExtension') {
+    // isEnabled = false;
+    sendResponse({ success: true });
+    return true;
+  }
+  else if (message.action === 'enableExtension') {
+    // isEnabled = true;
     const subtitles = message.subtitles;
 
     // Use the translate function to perform the translation
@@ -27,7 +34,13 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
     // Return `true` to keep the message channel open for async response
     return true;
+
+    // } else if (message.action === 'getExtensionState') {
+    //   sendResponse({ enabled: isEnabled });
+    //   return true;
+
   } else if (message.action === 'changeLanguage') {
+
     const language = message.language;
     // Change the target language
     changeTargetLanguage(language);

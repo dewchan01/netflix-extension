@@ -4,7 +4,9 @@
   "version": "1.0",
   "description": "Translate subtitles of Netflix videos",
   "background": {
-    "scripts": ["background.js"],
+    "scripts": [
+      "background.js"
+    ],
     "persistent": false
   },
   "permissions": [
@@ -13,8 +15,12 @@
   ],
   "content_scripts": [
     {
-      "matches": ["https://www.netflix.com/*"],
-      "js": ["contentScript.js"],
+      "matches": [
+        "https://www.netflix.com/*"
+      ],
+      "js": [
+        "contentScript.js"
+      ],
       "run_at": "document_end"
     }
   ],
