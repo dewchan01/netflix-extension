@@ -66,19 +66,44 @@ function sendSubtitleText(subtitleText) {
 
 let previousSubtitleText = '';
 
-function observeSubtitleChanges() {
-  setInterval(() => {
-    const subtitleElement = getSubtitleElement();
-    const subtitleText = getSubtitleText(subtitleElement);
-    if (subtitleText === '') {
-      setTranslatedSubtitleText('', subtitleElement);
+let isEnabled = false;
+let intervalId = null;
+
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  if (message.action === 'toggleExtension') {
+    isEnabled = !isEnabled;
+
+    if (isEnabled && !intervalId) {
+      intervalId = setInterval(observeSubtitleChanges, 100);
+    } else if (!isEnabled && intervalId) {
+      clearInterval(intervalId);
+      intervalId = null;
+      removeTranslatedSubtitle();
     }
-    if (subtitleText && subtitleText !== previousSubtitleText) {
-      previousSubtitleText = subtitleText;
-      sendSubtitleText(subtitleText);
-    }
-  }, 100); // Adjust the interval duration as needed
+
+    sendResponse({ isEnabled: isEnabled });
+  }
+});
+
+function removeTranslatedSubtitle() {
+  const translatedSubtitle = document.querySelector('.translatedSubtitle');
+  if (translatedSubtitle) {
+    translatedSubtitle.parentNode.removeChild(translatedSubtitle);
+    console.log('Translated subtitle removed.');
+  }
 }
 
-// Run the script
-observeSubtitleChanges();
+function observeSubtitleChanges() {
+  const subtitleElement = getSubtitleElement();
+  const subtitleText = getSubtitleText(subtitleElement);
+
+  if (subtitleText === '') {
+    setTranslatedSubtitleText('', subtitleElement);
+  }
+
+  if (subtitleText && subtitleText !== previousSubtitleText) {
+    previousSubtitleText = subtitleText;
+    sendSubtitleText(subtitleText);
+  }
+}
+

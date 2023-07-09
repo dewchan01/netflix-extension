@@ -1,5 +1,4 @@
 let targetLanguage = 'zh-CN'; // Default target language
-// let isEnabled = false; // Current state of the extension
 
 function translate(sourceText, sendResponse) {
   var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" + targetLanguage + "&dt=t&q=" + encodeURI(sourceText);
@@ -34,10 +33,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
     // Return `true` to keep the message channel open for async response
     return true;
-
-    // } else if (message.action === 'getExtensionState') {
-    //   sendResponse({ enabled: isEnabled });
-    //   return true;
 
   } else if (message.action === 'changeLanguage') {
 

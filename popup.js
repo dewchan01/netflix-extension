@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   let isEnabled = false;
 
-  // Function to toggle the extension state
   function toggleExtension() {
     isEnabled = !isEnabled;
 
@@ -20,21 +19,23 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Function to enable the extension
   function enableExtension() {
-    chrome.runtime.sendMessage({ action: 'enableExtension' }, function (response) {
-      if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError);
-      }
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, { action: 'toggleExtension', isEnabled: true }, function (response) {
+        if (chrome.runtime.lastError) {
+          console.error(chrome.runtime.lastError);
+        }
+      });
     });
   }
 
-  // Function to disable the extension
   function disableExtension() {
-    chrome.runtime.sendMessage({ action: 'disableExtension' }, function (response) {
-      if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError);
-      }
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, { action: 'toggleExtension', isEnabled: false }, function (response) {
+        if (chrome.runtime.lastError) {
+          console.error(chrome.runtime.lastError);
+        }
+      });
     });
   }
 
@@ -43,26 +44,12 @@ document.addEventListener('DOMContentLoaded', function () {
   languageSelect.addEventListener('change', function () {
     const language = languageSelect.value;
 
-    chrome.runtime.sendMessage({ action: 'changeLanguage', language }, function (response) {
-      if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError);
-      }
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, { action: 'changeLanguage', language }, function (response) {
+        if (chrome.runtime.lastError) {
+          console.error(chrome.runtime.lastError);
+        }
+      });
     });
   });
 });
-
-// chrome.runtime.sendMessage({ action: 'getExtensionState' }, function (response) {
-//   if (chrome.runtime.lastError) {
-//     console.error(chrome.runtime.lastError);
-//   } else {
-//     isEnabled = response.enabled;
-
-//     if (isEnabled) {
-//       translationResult.textContent = 'Extension enabled';
-//       translateButton.textContent = 'Disable';
-//     } else {
-//       translationResult.textContent = 'Extension disabled';
-//       translateButton.textContent = 'Enable';
-//     }
-//   }
-// });
