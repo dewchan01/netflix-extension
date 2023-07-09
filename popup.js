@@ -1,25 +1,44 @@
-// popup.js
-
 document.addEventListener('DOMContentLoaded', function () {
   const translateButton = document.getElementById('translateButton');
   const languageSelect = document.getElementById('languageSelect');
   const translationResult = document.getElementById('translationResult');
 
-  translateButton.addEventListener('click', function () {
-    const targetLanguage = languageSelect.value;
+  let isEnabled = false;
 
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      const tabId = tabs[0].id;
+  // Function to toggle the extension state
+  function toggleExtension() {
+    isEnabled = !isEnabled;
 
-      chrome.tabs.sendMessage(tabId, { action: 'translate', targetLanguage }, function (response) {
-        if (response.success) {
-          translationResult.textContent = response.translatedSubtitles;
-        } else {
-          translationResult.textContent = 'Translation failed.';
-        }
-      });
+    if (isEnabled) {
+      translationResult.textContent = 'Extension enabled';
+      translateButton.textContent = 'Disable';
+      enableExtension();
+    } else {
+      translationResult.textContent = 'Extension disabled';
+      translateButton.textContent = 'Enable';
+      disableExtension();
+    }
+  }
+
+  // Function to enable the extension
+  function enableExtension() {
+    chrome.runtime.sendMessage({ action: 'enableExtension' }, function (response) {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError);
+      }
     });
-  });
+  }
+
+  // Function to disable the extension
+  function disableExtension() {
+    chrome.runtime.sendMessage({ action: 'disableExtension' }, function (response) {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError);
+      }
+    });
+  }
+
+  translateButton.addEventListener('click', toggleExtension);
 
   languageSelect.addEventListener('change', function () {
     const language = languageSelect.value;
@@ -31,3 +50,19 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 });
+
+// chrome.runtime.sendMessage({ action: 'getExtensionState' }, function (response) {
+//   if (chrome.runtime.lastError) {
+//     console.error(chrome.runtime.lastError);
+//   } else {
+//     isEnabled = response.enabled;
+
+//     if (isEnabled) {
+//       translationResult.textContent = 'Extension enabled';
+//       translateButton.textContent = 'Disable';
+//     } else {
+//       translationResult.textContent = 'Extension disabled';
+//       translateButton.textContent = 'Enable';
+//     }
+//   }
+// });
