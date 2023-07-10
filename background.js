@@ -20,12 +20,10 @@ function changeTargetLanguage(language) {
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.action === 'disableExtension') {
-    // isEnabled = false;
     sendResponse({ success: true });
     return true;
   }
   else if (message.action === 'enableExtension') {
-    // isEnabled = true;
     const subtitles = message.subtitles;
 
     // Use the translate function to perform the translation

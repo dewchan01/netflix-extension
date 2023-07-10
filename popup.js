@@ -5,8 +5,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   let isEnabled = false;
 
+  // Retrieve the extension state from storage when the popup is opened
+  chrome.storage.sync.get('isEnabled', function (result) {
+    isEnabled = result.isEnabled;
+    updateUI(isEnabled); // Update the UI based on the stored extension state
+  });
+
   function toggleExtension() {
-    isEnabled = !isEnabled;
+    isEnabled = !isEnabled; // Toggle the isEnabled variable
 
     if (isEnabled) {
       translationResult.textContent = 'Extension enabled';
@@ -27,6 +33,18 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
     });
+
+    chrome.storage.sync.set({ isEnabled: true }, function () {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError);
+      }
+    });
+
+    chrome.runtime.sendMessage({ action: 'enableExtension' }, function (response) {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError);
+      }
+    });
   }
 
   function disableExtension() {
@@ -37,6 +55,28 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
     });
+
+    chrome.storage.sync.set({ isEnabled: false }, function () {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError);
+      }
+    });
+
+    chrome.runtime.sendMessage({ action: 'disableExtension' }, function (response) {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError);
+      }
+    });
+  }
+
+  function updateUI(isEnabled) {
+    if (isEnabled) {
+      translationResult.textContent = 'Extension enabled';
+      translateButton.textContent = 'Disable';
+    } else {
+      translationResult.textContent = 'Extension disabled';
+      translateButton.textContent = 'Enable';
+    }
   }
 
   translateButton.addEventListener('click', toggleExtension);
@@ -44,12 +84,10 @@ document.addEventListener('DOMContentLoaded', function () {
   languageSelect.addEventListener('change', function () {
     const language = languageSelect.value;
 
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      chrome.tabs.sendMessage(tabs[0].id, { action: 'changeLanguage', language }, function (response) {
-        if (chrome.runtime.lastError) {
-          console.error(chrome.runtime.lastError);
-        }
-      });
+    chrome.runtime.sendMessage({ action: 'changeLanguage', language }, function (response) {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError);
+      }
     });
   });
 });
