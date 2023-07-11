@@ -2,6 +2,7 @@
 // WIP: fix the enable and disable of the extension button
 
 // Function to retrieve the current subtitle element
+
 function getSubtitleElement() {
   const subtitleElement = document.querySelector('#mainSub'); // Adjust the selector based on Netflix's HTML structure for subtitles
   return subtitleElement;
@@ -65,11 +66,21 @@ function sendSubtitleText(subtitleText) {
 }
 
 let previousSubtitleText = '';
-
 let isEnabled = false;
 let intervalId = null;
 
+// Retrieve the extension state from storage when the content script is injected
+chrome.storage.sync.get('isEnabled', function (result) {
+  isEnabled = result.isEnabled;
+
+  // Start observing subtitle changes if the extension is enabled
+  if (isEnabled) {
+    intervalId = setInterval(observeSubtitleChanges, 100);
+  }
+});
+
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  
   if (message.action === 'toggleExtension') {
     isEnabled = !isEnabled;
 
@@ -106,4 +117,3 @@ function observeSubtitleChanges() {
     sendSubtitleText(subtitleText);
   }
 }
-
