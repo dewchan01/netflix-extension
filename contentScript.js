@@ -68,6 +68,7 @@ function sendSubtitleText(subtitleText) {
 let previousSubtitleText = '';
 let isEnabled = false;
 let intervalId = null;
+let isOriginalSubsVisible = true; // Variable to track the visibility of the original subtitles
 
 // Retrieve the extension state from storage when the content script is injected
 chrome.storage.sync.get('isEnabled', function (result) {
@@ -80,11 +81,12 @@ chrome.storage.sync.get('isEnabled', function (result) {
 });
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  
+  // toggleOriginalSubs();
   if (message.action === 'toggleExtension') {
     isEnabled = !isEnabled;
 
     if (isEnabled && !intervalId) {
+      createParentContainer(); // Create the parent container
       intervalId = setInterval(observeSubtitleChanges, 100);
     } else if (!isEnabled && intervalId) {
       clearInterval(intervalId);
@@ -93,8 +95,40 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     }
 
     sendResponse({ isEnabled: isEnabled });
+  } else if (message.action === 'toggleOriginalSubsVisibility') {
+    isOriginalSubsVisible = message.isOriginalSubsVisible;
+    toggleOriginalSubs();
+    sendResponse({ success: true });
   }
 });
+
+function createParentContainer() {
+  const parentContainer = document.createElement('div');
+  parentContainer.setAttribute('id', 'parentContainer');
+  parentContainer.style.cssText = 'position: relative;';
+
+  const subtitleElement = getSubtitleElement();
+
+  if (subtitleElement && subtitleElement.parentNode) {
+    const parentElement = subtitleElement.parentNode;
+    parentElement.insertBefore(parentContainer, subtitleElement);
+    parentContainer.appendChild(subtitleElement);
+    console.log('Parent container created.');
+  }
+}
+
+function toggleOriginalSubs() {
+  const parentContainer = document.getElementById('parentContainer');
+  const subtitleElement = getSubtitleElement();
+
+  if (parentContainer || subtitleElement) {
+    if (isOriginalSubsVisible) {
+      subtitleElement.style.visibility = 'visible'; // Show the original subtitles
+    } else {
+      subtitleElement.style.visibility = 'hidden'; // Hide the original subtitles
+    }
+  }
+}
 
 function removeTranslatedSubtitle() {
   const translatedSubtitle = document.querySelector('.translatedSubtitle');
@@ -116,4 +150,4 @@ function observeSubtitleChanges() {
     previousSubtitleText = subtitleText;
     sendSubtitleText(subtitleText);
   }
-}
+  }
