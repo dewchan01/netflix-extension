@@ -8,7 +8,7 @@ Please be mindful since this translator may not always translate the subtitle co
 Only work for Netflix Video.</i>
 
 ## Prerequisites
-- [Netflix Billingual Subtitles](https://chrome.google.com/webstore/detail/netflix-bilingual-subtitl/ociifpecaephgjmjlkepjmiemcjidbgn)
+- [Netflix Billingual Subtitles](https://chrome.google.com/webstore/detail/netflix-bilingual-subtitl/ociifpecaephgjmjlkepjmiemcjidbgn): Without this extension, Neflix original subtitle will be captured, translated and displayed quite slow.
 
 ## Instruction to download
 
