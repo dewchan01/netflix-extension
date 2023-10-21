@@ -2,16 +2,22 @@
 // WIP: fix the enable and disable of the extension button
 
 // Function to retrieve the current subtitle element
+function editClassProperty(){
+  const subtitleElement = document.querySelector('.player-timedtext')
+  if (subtitleElement){
+  subtitleElement.className = 'player-timedtext hideSub';
+  }
+}
 
 function getSubtitleElement() {
-  const subtitleElement = document.querySelector('#mainSub'); // Adjust the selector based on Netflix's HTML structure for subtitles
+  const subtitleElement = document.querySelector('.player-timedtext'); // Adjust the selector based on Netflix's HTML structure for subtitles
   return subtitleElement;
 }
 
 // Function to retrieve the current subtitle text
 function getSubtitleText(subtitleElement) {
   if (subtitleElement) {
-    return subtitleElement.textContent.trim();
+    return subtitleElement.textContent.trim();  
   }
 
   return '';
@@ -30,12 +36,8 @@ function setTranslatedSubtitleText(translatedSubtitles, subtitleElement) {
     existingTranslatedSubtitle.textContent = translatedSubtitles;
     console.log('Translated subtitle updated.');
   } else {
-    if (subtitleElement && subtitleElement.parentNode) {
-      const parentElement = subtitleElement.parentNode;
-      const siblingElement = subtitleElement.nextElementSibling;
-
-      parentElement.insertBefore(translatedSubtitleElement, siblingElement);
-      parentElement.removeChild(subtitleElement);
+    if (subtitleElement) {
+      subtitleElement.after(translatedSubtitleElement);
       console.log('Translated subtitle inserted into DOM.');
     } else {
       console.log('Subtitle element or parent node not found.');
@@ -82,11 +84,14 @@ chrome.storage.sync.get('isEnabled', function (result) {
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   // toggleOriginalSubs();
+  if (!document.querySelector('.hideSub')){
+    editClassProperty();
+  }
+
   if (message.action === 'toggleExtension') {
     isEnabled = !isEnabled;
 
     if (isEnabled && !intervalId) {
-      createParentContainer(); // Create the parent container
       intervalId = setInterval(observeSubtitleChanges, 100);
     } else if (!isEnabled && intervalId) {
       clearInterval(intervalId);
@@ -97,38 +102,13 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     sendResponse({ isEnabled: isEnabled });
   } else if (message.action === 'toggleOriginalSubsVisibility') {
     isOriginalSubsVisible = message.isOriginalSubsVisible;
-    toggleOriginalSubs();
+    if (!document.querySelector('.hideSub')){
+      editClassProperty();
+    }
     sendResponse({ success: true });
   }
 });
 
-function createParentContainer() {
-  const parentContainer = document.createElement('div');
-  parentContainer.setAttribute('id', 'parentContainer');
-  parentContainer.style.cssText = 'position: relative;';
-
-  const subtitleElement = getSubtitleElement();
-
-  if (subtitleElement && subtitleElement.parentNode) {
-    const parentElement = subtitleElement.parentNode;
-    parentElement.insertBefore(parentContainer, subtitleElement);
-    parentContainer.appendChild(subtitleElement);
-    console.log('Parent container created.');
-  }
-}
-
-function toggleOriginalSubs() {
-  const parentContainer = document.getElementById('parentContainer');
-  const subtitleElement = getSubtitleElement();
-
-  if (parentContainer || subtitleElement) {
-    if (isOriginalSubsVisible) {
-      subtitleElement.style.visibility = 'visible'; // Show the original subtitles
-    } else {
-      subtitleElement.style.visibility = 'hidden'; // Hide the original subtitles
-    }
-  }
-}
 
 function removeTranslatedSubtitle() {
   const translatedSubtitle = document.querySelector('.translatedSubtitle');

@@ -40,16 +40,19 @@ document.addEventListener('DOMContentLoaded', function () {
       translateButton.textContent = 'Enable';
       disableExtension();
     }
-
-   
   }
 
   function toggleOriginalSubsVisibility() {
     isOriginalSubsVisible = originalSubsCheckbox.checked; // Update the isOriginalSubsVisible variable
-
+    // console.log(isOriginalSubsVisible)
     // Send message to content script to toggle the visibility of the original subtitles
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       chrome.tabs.sendMessage(tabs[0].id, { action: 'toggleOriginalSubsVisibility', isOriginalSubsVisible }, function (response) {
+        if(isOriginalSubsVisible){
+          chrome.tabs.insertCSS(tabs[0].id,{ code: '.hideSub { display: block!important; }'});
+        }else{
+          chrome.tabs.insertCSS(tabs[0].id,{ code: '.hideSub { display: none!important; }'});
+        }
         if (chrome.runtime.lastError) {
           console.error(chrome.runtime.lastError);
         }
@@ -66,6 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function enableExtension() {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      chrome.tabs.insertCSS(tabs[0].id,{ code: '.hideSub { display: block; }'});
       chrome.tabs.sendMessage(tabs[0].id, { action: 'toggleExtension', isEnabled: true }, function (response) {
         if (chrome.runtime.lastError) {
           console.error(chrome.runtime.lastError);
