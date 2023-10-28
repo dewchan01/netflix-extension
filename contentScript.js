@@ -2,22 +2,31 @@
 // WIP: fix the enable and disable of the extension button
 
 // Function to retrieve the current subtitle element
-function editClassProperty(){
-  const subtitleElement = document.querySelector('.player-timedtext')
-  if (subtitleElement){
-  subtitleElement.className = 'player-timedtext hideSub';
+function editClassProperty() {
+  const netflixSubtitleElement = document.querySelector('.player-timedtext');
+  // const youtubeSubtitleElement = document.querySelector('.ytp-caption-window-rollup');
+  const bilibiliSubtitleElement = document.querySelector('.bpx-player-subtitle-panel-position');
+  if (netflixSubtitleElement) {
+    netflixSubtitleElement.className = 'player-timedtext hideSub';
+  }
+  // else if(youtubeSubtitleElement){
+  //   youtubeSubtitleElement.className = 'ytp-caption-window-rollup hideSub';
+  // }
+  else if(bilibiliSubtitleElement){
+    bilibiliSubtitleElement.className = 'bpx-player-subtitle-panel-position hideSub';
   }
 }
 
 function getSubtitleElement() {
-  const subtitleElement = document.querySelector('.player-timedtext'); // Adjust the selector based on Netflix's HTML structure for subtitles
+  // document.querySelector('.ytp-caption-window-rollup') ||
+  const subtitleElement = document.querySelector('.player-timedtext') || document.querySelector('.bpx-player-subtitle-panel-position'); // Adjust the selector based on Netflix's HTML structure for subtitles
   return subtitleElement;
 }
 
 // Function to retrieve the current subtitle text
 function getSubtitleText(subtitleElement) {
   if (subtitleElement) {
-    return subtitleElement.textContent.trim();  
+    return subtitleElement.textContent.trim();
   }
 
   return '';
@@ -28,7 +37,7 @@ function setTranslatedSubtitleText(translatedSubtitles, subtitleElement) {
   const translatedSubtitleElement = document.createElement('p');
   translatedSubtitleElement.className = 'translatedSubtitle';
   translatedSubtitleElement.textContent = translatedSubtitles;
-  translatedSubtitleElement.style.cssText = 'left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; position: absolute; width: 1920px; top: 758.325px; font-size: 40px; font-weight: 500; font-family: "Netflix Sans", "Helvetica Neue", "Segoe UI", Roboto, Ubuntu, sans-serif; color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
+  translatedSubtitleElement.style.cssText = 'left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; position: absolute; width: 1920px; top: 85%; font-size: 40px; font-weight: 500; font-family: "Netflix Sans", "Helvetica Neue", "Segoe UI", Roboto, Ubuntu, sans-serif; color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;';
 
   const existingTranslatedSubtitle = document.querySelector('.translatedSubtitle');
 
@@ -84,7 +93,7 @@ chrome.storage.sync.get('isEnabled', function (result) {
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   // toggleOriginalSubs();
-  if (!document.querySelector('.hideSub')){
+  if (!document.querySelector('.hideSub')) {
     editClassProperty();
   }
 
@@ -102,7 +111,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     sendResponse({ isEnabled: isEnabled });
   } else if (message.action === 'toggleOriginalSubsVisibility') {
     isOriginalSubsVisible = message.isOriginalSubsVisible;
-    if (!document.querySelector('.hideSub')){
+    if (!document.querySelector('.hideSub')) {
       editClassProperty();
     }
     sendResponse({ success: true });
@@ -130,4 +139,4 @@ function observeSubtitleChanges() {
     previousSubtitleText = subtitleText;
     sendSubtitleText(subtitleText);
   }
-  }
+}
